@@ -1,0 +1,1506 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Daniel Romotsky" />
+
+<meta name="date" content="2019-11-28" />
+
+<title>Los Angeles Metro Bike Share Analysis &amp; Predictive Model</title>
+
+<script src="libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="libs/navigation-1.1/tabsets.js"></script>
+<link href="libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="libs/kePrint-0.0.1/kePrint.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Los Angeles Metro Bike Share Analysis &amp; Predictive Model</h1>
+<h4 class="author">Daniel Romotsky</h4>
+<h4 class="date">11/28/2019</h4>
+
+</div>
+
+
+<p><img src="title2.gif" /></p>
+<div id="to-view-the-full-analysis-with-animation-please-refer-to-the-html-version" class="section level2">
+<h2>To view the full analysis with animation, please refer to the <a href="">HTML version</a></h2>
+<hr />
+</div>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>As an LA native, I know that it is a driver’s city. Traffic is always expected and road rage is narrowly avoided daily. Up until the 2010’s, you had to own a car to get anywhere. However, tech and the share economy has started to change that assumption, with Uber and Lyft, more accurate bus times, delivery services, and flexible work making it somewhat easier to get to where you need to be.</p>
+<p>Of all the new advancements, the greenest opportunity for transportation is city bike share programs, which seem to now be available in most metropolitan cities. When I moved back to Los Angeles, I was quite surprised how many bikers there were on the road. I’m an avid biker myself and wanted to learn more about the bike share program in the city. With minimal research, I found that the LA Metro dedicated a portion of it’s website to <a href="https://bikeshare.metro.net">Bike Share</a>, including historical rider <a href="https://bikeshare.metro.net/about/data/">data</a> for public consumption.</p>
+<p>The aim of this project is to leverage this data to analyze bike share rider behavior, find patterns, and create a model that will predict the rider volume across the city.</p>
+<div id="outline" class="section level3">
+<h3>Outline</h3>
+<ul>
+<li>Get the Data</li>
+<li>Exploratory Analysis
+<ul>
+<li>Pre-processing/data-cleansing</li>
+<li>Pull in other factors/variables</li>
+</ul></li>
+<li>Predictive Model</li>
+<li>Model Results</li>
+<li>Conclusion</li>
+</ul>
+<p><em>Note that much of the code has been suppressed for ease of reading. Please refer to the r code for more-detailed explanations.</em></p>
+<p><em>Also, in order to run the full R code, you will need to input your own Google Maps API key. More info on how to do this can be found <a href="https://cloud.google.com/maps-platform/">here</a>.</em></p>
+</div>
+</div>
+<div id="get-the-data" class="section level1">
+<h1>Get the Data</h1>
+<p>There are various csv files provided at <a href="https://bikeshare.metro.net/about/data/" class="uri">https://bikeshare.metro.net/about/data/</a></p>
+<p>The files types are</p>
+<ul>
+<li><p>Trip Data</p></li>
+<li><p>Station Lookup</p></li>
+</ul>
+<p>To get the data, I used the <strong>rvest</strong> and <strong>magrittr</strong> packages &amp; followed these steps</p>
+<ul>
+<li><p>Read the html code on BikeShare’s About page: <em><a href="https://bikeshare.metro.net/about/data/" class="uri">https://bikeshare.metro.net/about/data/</a></em></p></li>
+<li><p>From inspecting the page, I know that the data file names live in the HTML class titled <em>a</em>. I save the respective nodes.</p></li>
+<li><p>Using the <strong>stringr</strong> package, I then strip out the names I want.</p></li>
+</ul>
+<p>Sample of the data nodes on the page:</p>
+<pre><code>## [1] &quot;2019 Q3 (July – September)&quot;   &quot;2019 Q2 (April – June)&quot;      
+## [3] &quot;2019 Q1 (January – March)&quot;    &quot;2018 Q4 (October – December)&quot;
+## [5] &quot;2018 Q3 (July – September)&quot;   &quot;2018 Q2 (April – June)&quot;</code></pre>
+<p>And the sample of file names:</p>
+<pre><code>## [1] &quot;https://bikeshare.metro.net/wp-content/uploads/2019/10/metro-bike-share-trips-2019-q3-1.zip&quot;  
+## [2] &quot;https://bikeshare.metro.net/wp-content/uploads/2019/08/metro-bike-share-trips-2019-q2.csv.zip&quot;
+## [3] &quot;https://bikeshare.metro.net/wp-content/uploads/2019/04/metro-bike-share-trips-2019-q1.csv.zip&quot;
+## [4] &quot;https://bikeshare.metro.net/wp-content/uploads/2019/01/metro-bike-share-trips-2018-q4.csv.zip&quot;
+## [5] &quot;https://bikeshare.metro.net/wp-content/uploads/2018/10/metro-bike-share-trips-2018-q3.csv.zip&quot;
+## [6] &quot;https://bikeshare.metro.net/wp-content/uploads/2018/08/metro-bike-share-trips-2018-q2.csv.zip&quot;</code></pre>
+<ul>
+<li>I then download the zipped files to my local drive and unzip them.</li>
+<li>The names in each file don’t exactly match up, so I created a short function to line everything up.</li>
+</ul>
+<pre><code>df_final &lt;- data.frame()
+for (i in 1:length(df)){
+  df_temp &lt;- df[[i]][c(1:14)]
+  names(df_temp) &lt;- c(&quot;trip_id&quot;, &quot;duration&quot;, &quot;start_time&quot;, &quot;end_time&quot;, &quot;start_station_id&quot;,   
+                      &quot;start_lat&quot;,  &quot;start_lon&quot;, &quot;end_station_id&quot;, &quot;end_lat&quot;,
+                      &quot;end_lon&quot;, &quot;bike_id&quot;, &quot;plan_duration&quot;, &quot;trip_route_category&quot;, &quot;passholder_type&quot;)
+  df_final &lt;- rbind(df_final, df_temp)
+}</code></pre>
+<ul>
+<li>Here’s the final bike riding data set from the site:</li>
+</ul>
+<pre><code>## Observations: 853,813
+## Variables: 14
+## $ trip_id             &lt;int&gt; 17059131, 17059130, 17059129, 17059128, 1705…
+## $ duration            &lt;int&gt; 480, 720, 1020, 300, 300, 1200, 720, 2880, 2…
+## $ start_time          &lt;chr&gt; &quot;1/1/2017 0:15&quot;, &quot;1/1/2017 0:24&quot;, &quot;1/1/2017 …
+## $ end_time            &lt;chr&gt; &quot;1/1/2017 0:23&quot;, &quot;1/1/2017 0:36&quot;, &quot;1/1/2017 …
+## $ start_station_id    &lt;int&gt; 3030, 3028, 3027, 3007, 3007, 3066, 3029, 30…
+## $ start_lat           &lt;dbl&gt; 34.05194, 34.05832, 34.04998, 34.05048, 34.0…
+## $ start_lon           &lt;dbl&gt; -118.2435, -118.2461, -118.2472, -118.2546, …
+## $ end_station_id      &lt;int&gt; 3029, 3028, 3018, 3031, 3031, 3055, 3079, 30…
+## $ end_lat             &lt;dbl&gt; 34.04885, 34.05832, 34.04373, 34.04470, 34.0…
+## $ end_lon             &lt;dbl&gt; -118.2464, -118.2461, -118.2601, -118.2524, …
+## $ bike_id             &lt;chr&gt; &quot;6220&quot;, &quot;6351&quot;, &quot;5836&quot;, &quot;6142&quot;, &quot;6135&quot;, &quot;652…
+## $ plan_duration       &lt;int&gt; 30, 0, 0, 30, 30, 0, 0, 0, 0, 0, 0, 30, 0, 0…
+## $ trip_route_category &lt;chr&gt; &quot;One Way&quot;, &quot;Round Trip&quot;, &quot;One Way&quot;, &quot;One Way…
+## $ passholder_type     &lt;chr&gt; &quot;Monthly Pass&quot;, &quot;Walk-up&quot;, &quot;Walk-up&quot;, &quot;Month…</code></pre>
+<ul>
+<li>Now let’s add some more vars for easier analysis, starting with the dates and times. I’ve created new variables for <em>YYYY-MM-DD</em> and <em>time</em> using the <strong>Lubridate package</strong>.</li>
+</ul>
+<pre><code>library(lubridate)
+bike_data &lt;- df_final %&gt;% mutate(
+  start_time = parse_date_time(start_time, orders = c(&quot;Ymd HMS&quot;, &quot;mdY HM&quot;)),
+  end_time = parse_date_time(end_time, orders = c(&quot;Ymd HMS&quot;, &quot;mdY HM&quot;)),
+                                 start_date = ymd(as_date(start_time)),
+                                 end_date = ymd(as_date(end_time)))</code></pre>
+<ul>
+<li>Now let’s pull in the station lookup table.</li>
+</ul>
+<pre><code>station_index &lt;- str_detect(html_text(nodes), &quot;Station Table&quot;)
+html_text(nodes)[station_index]
+html_attr(nodes, &quot;href&quot;)[station_index]
+station_url &lt;- html_attr(nodes, &quot;href&quot;)[station_index]
+station_url
+download.file(station_url, &quot;station.csv&quot;) 
+station_lookup&lt;- read.csv(&quot;station.csv&quot;, stringsAsFactors = FALSE)</code></pre>
+<ul>
+<li><p>We bring that into the data set, joined by start and end station. Then make some updates to variable naming.</p></li>
+<li><p><strong>Data cleansing #1</strong>: According to the website where this data was pulled, “Virtual Station” is used by staff to check in or check out a bike remotely for a special event or in a situation in which a bike could not otherwise be checked in or out to a station. I also needed to ensure each station has uniform sets of latitude and longitudinal coordinates. I found that one station changed coordinates slightly in 2018, which threw off my analysis, so I went in an aligned it.</p></li>
+</ul>
+</div>
+<div id="exploratory-analysis" class="section level1">
+<h1>Exploratory Analysis</h1>
+<div id="time-based" class="section level3">
+<h3>Time-based</h3>
+<ul>
+<li>We see a clear increase in rides over time <img src="bikeshare2_files/figure-html/viz-1.png" width="1152" /></li>
+<li>It’s not surprising to see that rides are highest during the summer:</li>
+</ul>
+<p><img src="bikeshare2_files/figure-html/viz2-1.png" width="1152" /></p>
+</div>
+<div id="station-performance" class="section level3">
+<h3>Station performance</h3>
+<p>Each station rolls into a larger region around the city of Los Angeles:</p>
+<p><img src="bikeshare2_files/figure-html/station2-1.png" width="1152" /></p>
+<p>Obviously the most rides begin in Downtown LA. We’ll use free scales and view over months so that we can analyze the differences in distribution by region</p>
+<p><img src="bikeshare2_files/figure-html/shidsu-1.png" width="1152" /> The regions all follow similar distributions - increases in the summer, however there are some regions that have unknown regions or very low ride counts. Have bikes only been available for short periods of time in different regions? This can be viewed in two ways.</p>
+<p><strong>Time-series view of each region</strong></p>
+<p><img src="bikeshare2_files/figure-html/dhfudhf-1.png" width="1152" /></p>
+<p><strong>Heatmap view of each region</strong> It’s a bit more clear of when each station was available with a heatmap:</p>
+<p><img src="bikeshare2_files/figure-html/erherhheat-1.png" width="1152" /></p>
+<p>More <strong>data cleansing #2</strong> ! Because North Hollywood region is so new and Pasadena ceased operations, I will remove both for the predictive model. NAs and Free Bikes will be omitted from further analysis as well.</p>
+</div>
+<div id="spatialmapping-data-analysis" class="section level3">
+<h3>Spatial/Mapping Data &amp; Analysis</h3>
+<p>Let’s look at some spatial data to help visualize movement of these bike rides. I used the <strong>ggmap</strong> package, which integrates with a Google Maps API key. I can then plot point directly on a map, using the latitude and longitude coordinates from the data set.</p>
+<p><em>Note</em> that you will need to input your own key in order to run this mapping script.</p>
+<p><img src="bikeshare2_files/figure-html/map-1.png" width="1152" /></p>
+<p>Main areas of operation are in Downtown LA, Santa Monica, and Long Beach.</p>
+<p><img src="bikeshare2_files/figure-html/neighborhoodviews-1.png" width="1152" /><img src="bikeshare2_files/figure-html/neighborhoodviews-2.png" width="1152" /><img src="bikeshare2_files/figure-html/neighborhoodviews-3.png" width="1152" /></p>
+<p>The data set provides a start station and an end station, which allows me to look at general routes people take on their shared bikes. As mentioned previously, the three main regions are Downtown, Santa Monica, and Long Beach… and for those familiar with LA will know that they are nowhere near each other!  Using the <strong>geosphere</strong> package…</p>
+<pre><code>## Distance from DTLA and Long Beach is about 35060.06 meters or 21.78531 miles!</code></pre>
+<pre><code>## Distance between DTLA and Santa Monica is about 21185.24 meters or 13.1639 miles!</code></pre>
+<pre><code>## Distance between Long Beach and Santa Monica is about 34268.44 meters or 21.29342 miles!</code></pre>
+<p>Surely, noone is crazy enough to bike between regions… right? Wrong!</p>
+<pre><code>## Apparently, there are 500 rides that went from one region to the other. The percentage of rides out of the total is 0.0637% 
+##  Where are they starting and ending?</code></pre>
+<p><img src="bikeshare2_files/figure-html/crazybikers-1.png" width="1152" /></p>
+<p>It looks like most of them originated in DTLA. However, this static visualization is rather tough to understand.  <em>Side note</em> about myself: I am really into animation and video production. A true novice in these fields, I’ve made a few animated shorts and parody videos for friends and families. I also love being analytical and got into data visualization and analytics because it’s a great blend of both sides of the brain. However, I didn’t think there was opportunity to infuse movement of data in a professional field until I learned about the… <strong>gganimate</strong> package - this is developed to work in tandem with ggplot functions to create frames of graphs which shows change over time. I will use this extensively for any animated graphics you see moving forward. So… where are these bikers heading?</p>
+<p><img src="bikeshare2_files/figure-html/craycray-1.gif" /><!-- --></p>
+<p>The majority of these over-achievers are heading to or from downtown - likely for work. Very few of the long rides are along the coast (SM to LB) since the <a href="https://upload.wikimedia.org/wikipedia/commons/5/55/Lasouthbaybiketrail.jpg">Marvin Braude Bike Trail</a> ends at Torrance - well north of Long Beach.</p>
+<p>Let’s look a little closer at the rides within each region.</p>
+<p><img src="bikeshare2_files/figure-html/SM-1.gif" /><!-- --> <img src="bikeshare2_files/figure-html/fhdufdh-1.gif" /><!-- --> <img src="bikeshare2_files/figure-html/fhdfhudf-1.gif" /><!-- --></p>
+<p>Are there any hourly trends that we can see? Again, I will use the <strong>lubridate</strong> package to parse the hour, and <strong>gganimate</strong> to visualize the trends, if any.</p>
+<p><img src="bikeshare2_files/figure-html/hourly-1.gif" /><!-- --></p>
+<p>A heatmap of hours by station doesn’t really show any large trends.</p>
+<p><img src="bikeshare2_files/figure-html/heashd-1.png" width="1152" /></p>
+<p>Furthermore, looking at boxplots of hourly rides by stations, hourly data will not be a really solid predictor.</p>
+<p><img src="bikeshare2_files/figure-html/dfhudi-1.png" width="1152" /></p>
+<p>Hours will not be used in the predictive model.</p>
+</div>
+<div id="day-of-week" class="section level3">
+<h3>Day of week</h3>
+<p>What can the day of week tell us?</p>
+<p><img src="bikeshare2_files/figure-html/wday-1.png" width="1152" /></p>
+<p>There’s nothing really discernible here, but if you recall, we know that ride behavior is different by region. Splitting this view out by region shows a clear difference in the rides.</p>
+<p><img src="bikeshare2_files/figure-html/regwday-1.png" width="1152" /></p>
+<p>There are more weekend bike riders in Westside and Long Beach, since that’s where the fun is at… on the beach! It’s pretty apparent that bikers from DTLA are commuters, versus Westside and Port of LA, which are more popular on the weekends.</p>
+<p>So far, I’ve explored date-based trends and have found that <em>month</em> and <em>day of week + region</em> will be useful predictors in our model. One reason why certain months have more or less rides is due to temperature. Is there correlation between bike rides and temperature?</p>
+</div>
+<div id="temperature" class="section level3">
+<h3>Temperature</h3>
+<p>The data set from Bike Share does not include temperature. Fortunately, there’s an R package called “<em>GSODR</em>” that I’m trying out.</p>
+<p>To map the temp data into the bike info, I had to match the weather station IDs with the start_regions. It took a bit of inspection of the station names, but I found:</p>
+<pre><code>## # A tibble: 8 x 3
+## # Groups:   NAME [8]
+##   NAME                                   STNID            n
+##   &lt;chr&gt;                                  &lt;chr&gt;        &lt;int&gt;
+## 1 BURBANK-GLENDALE-PASA ARPT             722880-23152  1417
+## 2 DOWNTOWN L.A./USC CAMPUS               722874-93134  1416
+## 3 LONG BEACH / DAUGHERTY FIELD / AIRPORT 722970-23129  1418
+## 4 LOS ANGELES INTERNATIONAL AIRPORT      722950-23174  1418
+## 5 SANTA MONICA MUNI AIRPORT              722885-93197  1418
+## 6 SANTA MONICA PIER                      994028-99999   354
+## 7 VAN NUYS AIRPORT                       722886-23130  1417
+## 8 WHITMAN AIRPORT                        745057-53130  1385</code></pre>
+<pre><code>## [1] &quot;The names were pretty clear for me to align to my 3 regions:&quot;</code></pre>
+<pre><code>##   start_region          sid
+## 1         DTLA 722874-93134
+## 2   Port of LA 722970-23129
+## 3     Westside 722885-93197</code></pre>
+<pre><code>## Observations: 88,704
+## Variables: 18
+## $ start_region  &lt;chr&gt; &quot;DTLA&quot;, &quot;DTLA&quot;, &quot;DTLA&quot;, &quot;DTLA&quot;, &quot;DTLA&quot;, &quot;DTLA&quot;, &quot;D…
+## $ YEARMODA      &lt;date&gt; 2016-10-01, 2016-10-02, 2016-10-03, 2016-10-05, 2…
+## $ TEMP          &lt;dbl&gt; 22.8, 20.1, 19.1, 19.0, 19.8, 23.1, 23.7, 22.1, 18…
+## $ DEWP          &lt;dbl&gt; 15.6, 14.9, 11.4, 13.4, 12.8, 6.1, 7.1, 11.6, 14.7…
+## $ SLP           &lt;dbl&gt; 1014.1, 1013.6, 1014.2, 1012.2, 1012.0, 1011.3, 10…
+## $ STP           &lt;dbl&gt; 7.7, 7.3, 7.7, 5.7, 5.6, 4.9, 4.6, 7.3, 9.4, 10.5,…
+## $ VISIB         &lt;dbl&gt; 15.8, 15.8, 15.6, 16.1, 15.8, 16.1, 16.1, 16.1, 15…
+## $ WDSP          &lt;dbl&gt; 0.7, 0.7, 0.9, 1.1, 0.7, 0.4, 0.7, 0.8, 0.8, 0.5, …
+## $ MIN           &lt;dbl&gt; 18.3, 16.7, 15.0, 15.0, 13.9, 16.1, 15.6, 16.1, 16…
+## $ MAX           &lt;dbl&gt; 28.3, 30.0, 25.6, 25.6, 27.2, 32.2, 32.8, 32.8, 28…
+## $ start_station &lt;chr&gt; &quot;11th &amp; Maple&quot;, &quot;11th &amp; Maple&quot;, &quot;11th &amp; Maple&quot;, &quot;1…
+## $ start_lat     &lt;dbl&gt; 34.03705, 34.03705, 34.03705, 34.03705, 34.03705, …
+## $ start_lon     &lt;dbl&gt; -118.2549, -118.2549, -118.2549, -118.2549, -118.2…
+## $ year          &lt;dbl&gt; 2016, 2016, 2016, 2016, 2016, 2016, 2016, 2016, 20…
+## $ month         &lt;ord&gt; Oct, Oct, Oct, Oct, Oct, Oct, Oct, Oct, Oct, Oct, …
+## $ day           &lt;int&gt; 1, 2, 3, 5, 6, 7, 8, 10, 11, 12, 13, 14, 16, 17, 1…
+## $ wday          &lt;ord&gt; Sat, Sun, Mon, Wed, Thu, Fri, Sat, Mon, Tue, Wed, …
+## $ n             &lt;int&gt; 3, 1, 2, 4, 1, 3, 2, 1, 4, 5, 2, 1, 1, 1, 1, 1, 4,…</code></pre>
+<p>The weather vars collected are as follows:</p>
+<ul>
+<li><p>TEMP = Avg temperature for the day, in Celsius.</p></li>
+<li><p>MIN = Min temperature for the day, in Celsius.</p></li>
+<li><p>MAX = Max temperature for the day, in Celsius.</p></li>
+<li><p>DEWP = Mean daily dew point converted to degrees C to tenths.</p></li>
+<li><p>SLP = Mean sea level pressure in millibars to tenths.</p></li>
+<li><p>STP = Mean station pressure for the day in millibars to tenths.</p></li>
+</ul>
+<p>Let’s plot each of these temp metrics against # of rides.</p>
+<p><img src="bikeshare2_files/figure-html/inspectdiff-1.png" width="1152" /></p>
+<p>Taking a closer look at STP and TEMP…</p>
+<p><img src="bikeshare2_files/figure-html/dfhudfhd-1.png" width="1152" /><img src="bikeshare2_files/figure-html/dfhudfhd-2.png" width="1152" /></p>
+<pre><code>## Correlation between TEMP and rides is 0.1997316</code></pre>
+<p>The correlation between TEMP and rides is not linear, yet there is a clear increase in rides until around 25 degrees Celsius, where it drops off afterwards… too hot!</p>
+<p>Other metrics such as Visibility (VISIB) and STP do not have enough variance to spot a trend.</p>
+<p>TEMP, MIN, and MAX show interesting, similar trends, but do we need all three?</p>
+<p><img src="bikeshare2_files/figure-html/three-1.gif" /><!-- --></p>
+<pre><code>## Correlation between TEMP and MAX is 0.9071299</code></pre>
+<pre><code>## Correlation between TEMP and MIN is 0.8978786</code></pre>
+<p>Due to such a high correlation, using all three won’t have incremental impact on the model. So I will only use TEMP.</p>
+<p>Let’s look at wind speed a bit closer, stratified by Temperature.</p>
+<p><img src="bikeshare2_files/figure-html/WDSP-1.png" width="1152" /></p>
+<pre><code>## # A tibble: 1 x 1
+##   corr_TEMP_WDSP
+##            &lt;dbl&gt;
+## 1         0.0834</code></pre>
+<p>Since the slopes are all over the place here, I do not see approximate bivariate normal distributions for WDSP versus rides when stratified by TEMP.</p>
+</div>
+</div>
+<div id="building-a-predictive-model" class="section level1">
+<h1>Building a Predictive Model</h1>
+<p>I will build a model to predict the number of rides per station on any given day. From the previous analyses, I will be using the variables that for the prediction that showed strong correlation with rides: *month, day of week, station, region, &amp; TEMP.</p>
+<p>The <em>key</em> will be the combination of start_station and the date.</p>
+<p>Using the <strong>caret</strong> package, I split the oberservations into training and test sets. I will be setting aside 15% of the data for testing the model.</p>
+<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+start_region
+</th>
+<th style="text-align:left;">
+YEARMODA
+</th>
+<th style="text-align:right;">
+TEMP
+</th>
+<th style="text-align:right;">
+WDSP
+</th>
+<th style="text-align:left;">
+start_station
+</th>
+<th style="text-align:right;">
+start_lat
+</th>
+<th style="text-align:right;">
+start_lon
+</th>
+<th style="text-align:right;">
+year
+</th>
+<th style="text-align:left;">
+month
+</th>
+<th style="text-align:right;">
+day
+</th>
+<th style="text-align:left;">
+wday
+</th>
+<th style="text-align:right;">
+n
+</th>
+<th style="text-align:left;">
+key
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+DTLA
+</td>
+<td style="text-align:left;">
+2016-10-01
+</td>
+<td style="text-align:right;">
+22.8
+</td>
+<td style="text-align:right;">
+0.7
+</td>
+<td style="text-align:left;">
+11th &amp; Maple
+</td>
+<td style="text-align:right;">
+34.03705
+</td>
+<td style="text-align:right;">
+-118.2549
+</td>
+<td style="text-align:right;">
+2016
+</td>
+<td style="text-align:left;">
+Oct
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+Sat
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:left;">
+11th &amp; Maple_2016-10-01
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DTLA
+</td>
+<td style="text-align:left;">
+2016-10-02
+</td>
+<td style="text-align:right;">
+20.1
+</td>
+<td style="text-align:right;">
+0.7
+</td>
+<td style="text-align:left;">
+11th &amp; Maple
+</td>
+<td style="text-align:right;">
+34.03705
+</td>
+<td style="text-align:right;">
+-118.2549
+</td>
+<td style="text-align:right;">
+2016
+</td>
+<td style="text-align:left;">
+Oct
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:left;">
+Sun
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+11th &amp; Maple_2016-10-02
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DTLA
+</td>
+<td style="text-align:left;">
+2016-10-03
+</td>
+<td style="text-align:right;">
+19.1
+</td>
+<td style="text-align:right;">
+0.9
+</td>
+<td style="text-align:left;">
+11th &amp; Maple
+</td>
+<td style="text-align:right;">
+34.03705
+</td>
+<td style="text-align:right;">
+-118.2549
+</td>
+<td style="text-align:right;">
+2016
+</td>
+<td style="text-align:left;">
+Oct
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:left;">
+Mon
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:left;">
+11th &amp; Maple_2016-10-03
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DTLA
+</td>
+<td style="text-align:left;">
+2016-10-05
+</td>
+<td style="text-align:right;">
+19.0
+</td>
+<td style="text-align:right;">
+1.1
+</td>
+<td style="text-align:left;">
+11th &amp; Maple
+</td>
+<td style="text-align:right;">
+34.03705
+</td>
+<td style="text-align:right;">
+-118.2549
+</td>
+<td style="text-align:right;">
+2016
+</td>
+<td style="text-align:left;">
+Oct
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:left;">
+Wed
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:left;">
+11th &amp; Maple_2016-10-05
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DTLA
+</td>
+<td style="text-align:left;">
+2016-10-06
+</td>
+<td style="text-align:right;">
+19.8
+</td>
+<td style="text-align:right;">
+0.7
+</td>
+<td style="text-align:left;">
+11th &amp; Maple
+</td>
+<td style="text-align:right;">
+34.03705
+</td>
+<td style="text-align:right;">
+-118.2549
+</td>
+<td style="text-align:right;">
+2016
+</td>
+<td style="text-align:left;">
+Oct
+</td>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:left;">
+Thu
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+11th &amp; Maple_2016-10-06
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DTLA
+</td>
+<td style="text-align:left;">
+2016-10-07
+</td>
+<td style="text-align:right;">
+23.1
+</td>
+<td style="text-align:right;">
+0.4
+</td>
+<td style="text-align:left;">
+11th &amp; Maple
+</td>
+<td style="text-align:right;">
+34.03705
+</td>
+<td style="text-align:right;">
+-118.2549
+</td>
+<td style="text-align:right;">
+2016
+</td>
+<td style="text-align:left;">
+Oct
+</td>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:left;">
+Fri
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:left;">
+11th &amp; Maple_2016-10-07
+</td>
+</tr>
+</tbody>
+</table>
+<p>Quick inspection of the data sets. <img src="bikeshare2_files/figure-html/dfhiuds-1.png" width="1152" /></p>
+<div id="root-mean-square-error-aka-rmse-will-be-the-measure-of-accuracy-of-the-model." class="section level3">
+<h3>Root Mean Square Error (AKA <strong>RMSE</strong>) will be the measure of accuracy of the model.</h3>
+<p>The calculation used here is <span class="math inline">\(\sqrt(1/n\sum_{1}^{n} (actualrides_{n} - predictedrides_{n})^2)\)</span></p>
+<p>The RSME function has been saved for future use:</p>
+<pre class="r"><code>RMSE &lt;- function(actual_rides, predicted_rides){
+  sqrt(mean((actual_rides - predicted_rides)^2))
+}
+# RMSE</code></pre>
+<p>Building the model using …</p>
+</div>
+<div id="overall-average" class="section level3">
+<h3>Overall Average</h3>
+<pre><code>## Has a RSME of 8.737111 which is not very good!</code></pre>
+<pre><code>## 
+## This means that the model is off by over 8.737111 rides per day per station.</code></pre>
+<p>This is ok since it’s the baseline for the model. I will then add iteratively each variable into the model. The approach is to take the average at each variable roll-up and add as an adjustor to the overall average.</p>
+<pre><code>variable_lookup &lt;- train %&gt;% group_by(VARIABLE) %&gt;% dplyr::summarise(p_variable = mean(n - mu))
+
+st_lookup %&gt;% arrange(desc(p_variable)) %&gt;% head(10) %&gt;% kable() #show highest hourly p
+
+predict_variable &lt;- mu + test %&gt;% left_join(variable_lookup) %&gt;% pull(p_variable)
+
+RMSE(test$n, predict_variable) ## will give us the prediced error</code></pre>
+</div>
+<div id="station-average" class="section level3">
+<h3>Station Average</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+start_station
+</th>
+<th style="text-align:right;">
+p_station
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Pop Hollywood Ciclavia Barnsdall Art Park Hub
+</td>
+<td style="text-align:right;">
+141.13896
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Mariachi Plaza
+</td>
+<td style="text-align:right;">
+135.13896
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Pop Hollywood Ciclavia Walk of Fame Hub
+</td>
+<td style="text-align:right;">
+81.13896
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CicLAvia Downtown Culver City Hub
+</td>
+<td style="text-align:right;">
+57.13896
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CicLAvia Palms Hub
+</td>
+<td style="text-align:right;">
+38.13896
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Ocean Front Walk &amp; Navy
+</td>
+<td style="text-align:right;">
+26.12188
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+7th &amp; Flower
+</td>
+<td style="text-align:right;">
+20.64098
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Ocean Front Walk &amp; North Venice
+</td>
+<td style="text-align:right;">
+16.31231
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Main &amp; 1st
+</td>
+<td style="text-align:right;">
+15.99331
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Union Station West Portal
+</td>
+<td style="text-align:right;">
+14.54277
+</td>
+</tr>
+</tbody>
+</table>
+<pre><code>## Has a RSME of 6.015118 which is already much better!</code></pre>
+</div>
+<div id="day-of-week-and-region" class="section level3">
+<h3>Day of Week and Region</h3>
+<p>You may recall during the analysis, We found that there were distinct distributions by day of week across the regions. I will work this into our model.</p>
+<pre><code>## Has a RSME of 5.944418 which is slightly better.</code></pre>
+</div>
+<div id="temperature-inclusion" class="section level3">
+<h3>Temperature inclusion</h3>
+<p>I know weather is a factor, so let’s use TEMP</p>
+<pre><code>## Has a RSME of 5.797346 which is slightly better.</code></pre>
+</div>
+<div id="monthly-adjustment" class="section level3">
+<h3>Monthly Adjustment</h3>
+<pre><code>## Has a RSME of 5.793406 which is a nice boost to error reduction.</code></pre>
+</div>
+<div id="yearly-adjustment" class="section level3">
+<h3>Yearly Adjustment</h3>
+<pre><code>## Has a RSME of 5.707488 which is a nice boost to error reduction.</code></pre>
+</div>
+<div id="residuals" class="section level3">
+<h3>Residuals</h3>
+<p>Where am I most off? Let’s inspect the daily trend by region. <img src="bikeshare2_files/figure-html/stationmodel-1.png" width="1152" /></p>
+<p><img src="bikeshare2_files/figure-html/trendddd-1.png" width="1152" /></p>
+<p>There are big misses in the predictions for days where the rides are abnormally high:</p>
+<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+start_region
+</th>
+<th style="text-align:left;">
+YEARMODA
+</th>
+<th style="text-align:right;">
+avg_resid
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Port of LA
+</td>
+<td style="text-align:left;">
+2017-08-13
+</td>
+<td style="text-align:right;">
+31.69
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Westside
+</td>
+<td style="text-align:left;">
+2018-09-03
+</td>
+<td style="text-align:right;">
+17.54
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Westside
+</td>
+<td style="text-align:left;">
+2018-09-02
+</td>
+<td style="text-align:right;">
+16.91
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DTLA
+</td>
+<td style="text-align:left;">
+2016-10-16
+</td>
+<td style="text-align:right;">
+15.89
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Westside
+</td>
+<td style="text-align:left;">
+2018-08-05
+</td>
+<td style="text-align:right;">
+13.74
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Westside
+</td>
+<td style="text-align:left;">
+2018-07-04
+</td>
+<td style="text-align:right;">
+13.35
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DTLA
+</td>
+<td style="text-align:left;">
+2017-10-08
+</td>
+<td style="text-align:right;">
+12.64
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DTLA
+</td>
+<td style="text-align:left;">
+2018-12-02
+</td>
+<td style="text-align:right;">
+12.32
+</td>
+</tr>
+</tbody>
+</table>
+<p>In doing a bit of research of what may have been going on for these dates, it became very apparent that Los Angeles is full of outdoor events. One that is very popular is</p>
+</div>
+<div id="ciclovia" class="section level3">
+<h3><a href="https://www.ciclavia.org">Ciclovia</a></h3>
+<p><strong>Ciclovia</strong> “catalyzes vibrant public spaces, active transportation and good health through car-free streets.” They put on large biking events around the city. The <a href="https://www.ciclavia.org/events_history">past events</a> align quite closely to some of these large residuals, so I will scrape the site and pull in the dates and locations of each.</p>
+<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+date
+</th>
+<th style="text-align:left;">
+location
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Sunday, October 06, 2019
+</td>
+<td style="text-align:left;">
+CicLAvia—Heart of LA | Celebrating UCLA100
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sunday, August 18, 2019
+</td>
+<td style="text-align:left;">
+CicLAvia—Meet the Hollywoods
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sunday, June 30, 2019
+</td>
+<td style="text-align:left;">
+CicLAvia—Mid City Meets Pico Union
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sunday, April 28, 2019
+</td>
+<td style="text-align:left;">
+CicLAvia—Wilmington
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sunday, March 03, 2019
+</td>
+<td style="text-align:left;">
+CicLAvia - Culver City Meets Mar Vista + Palms
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sunday, December 02, 2018
+</td>
+<td style="text-align:left;">
+CicLAvia - Heart of LA
+</td>
+</tr>
+</tbody>
+</table>
+<p>I then clean up the dates and join it against our bike model data</p>
+<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+date
+</th>
+<th style="text-align:left;">
+location
+</th>
+<th style="text-align:left;">
+date2
+</th>
+<th style="text-align:left;">
+date3
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Sunday, October 06, 2019
+</td>
+<td style="text-align:left;">
+CicLAvia—Heart of LA | Celebrating UCLA100
+</td>
+<td style="text-align:left;">
+October 06, 2019
+</td>
+<td style="text-align:left;">
+2019-10-06
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sunday, August 18, 2019
+</td>
+<td style="text-align:left;">
+CicLAvia—Meet the Hollywoods
+</td>
+<td style="text-align:left;">
+August 18, 2019
+</td>
+<td style="text-align:left;">
+2019-08-18
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sunday, June 30, 2019
+</td>
+<td style="text-align:left;">
+CicLAvia—Mid City Meets Pico Union
+</td>
+<td style="text-align:left;">
+June 30, 2019
+</td>
+<td style="text-align:left;">
+2019-06-30
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sunday, April 28, 2019
+</td>
+<td style="text-align:left;">
+CicLAvia—Wilmington
+</td>
+<td style="text-align:left;">
+April 28, 2019
+</td>
+<td style="text-align:left;">
+2019-04-28
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sunday, March 03, 2019
+</td>
+<td style="text-align:left;">
+CicLAvia - Culver City Meets Mar Vista + Palms
+</td>
+<td style="text-align:left;">
+March 03, 2019
+</td>
+<td style="text-align:left;">
+2019-03-03
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sunday, December 02, 2018
+</td>
+<td style="text-align:left;">
+CicLAvia - Heart of LA
+</td>
+<td style="text-align:left;">
+December 02, 2018
+</td>
+<td style="text-align:left;">
+2018-12-02
+</td>
+</tr>
+</tbody>
+</table>
+<pre><code>## [1] &quot;Comparing residuals for days with Ciclavia events vs all other days...&quot;</code></pre>
+<pre><code>## # A tibble: 2 x 2
+##   cic               avg_resid
+##   &lt;chr&gt;                 &lt;dbl&gt;
+## 1 ciclavia days          7.22
+## 2 non-ciclavia days      3.65</code></pre>
+<p>So overall, the mean absolute residuals are almost twice as high during ciclavia days. However, note that these events aren’t usually across the whole city. Rather, these events are specific to certain areas…</p>
+<p><img src="bikeshare2_files/figure-html/cicllaaaaa-1.png" width="1152" /><img src="bikeshare2_files/figure-html/cicllaaaaa-2.png" width="1152" /></p>
+<p>We can now label the regions in which ciclavia would be impacting bike rides.</p>
+<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+date3
+</th>
+<th style="text-align:left;">
+location
+</th>
+<th style="text-align:left;">
+start_region
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+2019-10-06
+</td>
+<td style="text-align:left;">
+CicLAvia—Heart of LA | Celebrating UCLA100
+</td>
+<td style="text-align:left;">
+DTLA
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2019-04-28
+</td>
+<td style="text-align:left;">
+CicLAvia—Wilmington
+</td>
+<td style="text-align:left;">
+Port of LA
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2019-03-03
+</td>
+<td style="text-align:left;">
+CicLAvia - Culver City Meets Mar Vista + Palms
+</td>
+<td style="text-align:left;">
+Westside
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2018-12-02
+</td>
+<td style="text-align:left;">
+CicLAvia - Heart of LA
+</td>
+<td style="text-align:left;">
+DTLA
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2018-09-30
+</td>
+<td style="text-align:left;">
+Celebrate LA! LA Phil 100 x CicLAvia
+</td>
+<td style="text-align:left;">
+DTLA
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2018-04-22
+</td>
+<td style="text-align:left;">
+CicLAvia Heart of the Foothills
+</td>
+<td style="text-align:left;">
+Westside
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2017-10-08
+</td>
+<td style="text-align:left;">
+CicLAvia - Heart of LA
+</td>
+<td style="text-align:left;">
+DTLA
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2017-08-13
+</td>
+<td style="text-align:left;">
+CicLAvia - San Pedro Meets Wilmington
+</td>
+<td style="text-align:left;">
+Port of LA
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2017-03-26
+</td>
+<td style="text-align:left;">
+CicLAvia - Culver City Meets Venice presented by Metro
+</td>
+<td style="text-align:left;">
+Westside
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2016-10-16
+</td>
+<td style="text-align:left;">
+CicLAvia - Heart of LA
+</td>
+<td style="text-align:left;">
+DTLA
+</td>
+</tr>
+</tbody>
+</table>
+<p>We can now add this as a new variable into the train and test data, joined off of date and region. Then use it as a predictor.</p>
+<p>Viewing these events as labels in our original Residual view…</p>
+<p><img src="bikeshare2_files/figure-html/trendddd2-1.png" width="1152" /></p>
+<p>Now let’s add ciclavia into the prediction… This is a bit trickier than the other variables, given that the adjsutor should only apply to specific days and regions.</p>
+<pre><code>cicla_lookup2 &lt;- train2 %&gt;% 
+  filter(!is.na(ciclavia_event)) %&gt;% # just the ciclavia days in the region that is impacted
+  left_join(st_lookup) %&gt;% left_join(region_wday_lookup) %&gt;% 
+  left_join(temp_lookup) %&gt;% left_join(year_lookup) %&gt;% left_join(month_lookup) %&gt;%
+  group_by(start_station) %&gt;% dplyr::summarise(p_cicla = (mean(n - mu - p_station - p_wday - p_temp - p_year - p_month))) %&gt;% ungroup()</code></pre>
+<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+start_region
+</th>
+<th style="text-align:right;">
+p_cicla
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+DTLA
+</td>
+<td style="text-align:right;">
+12.137175
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Port of LA
+</td>
+<td style="text-align:right;">
+19.653269
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Westside
+</td>
+<td style="text-align:right;">
+6.584454
+</td>
+</tr>
+</tbody>
+</table>
+<p>We then create some if statements for the values that don’t exist for certain stations:</p>
+<pre><code>  mutate(pred = ifelse(is.na(ciclavia_event), 
+                       p_station + p_wday + p_temp + p_year + p_month, 
+                        ifelse(is.na(p_cicla),
+                            p_station + p_wday + p_temp + p_year + p_month,    
+                            p_station + p_wday + p_temp + p_year + p_month + p_cicla)))</code></pre>
+<pre><code>## Yields an RMSE of 5.659323 which is better!</code></pre>
+<p>Looks better for those days!</p>
+<p><img src="bikeshare2_files/figure-html/trendddd3-1.png" width="1152" /></p>
+<p>The event anomalies are accounted for! We are very accurate at the daily-regional level, but pretty a miss at the more granular station level.</p>
+<p><img src="bikeshare2_files/figure-html/ghdhfid-1.png" width="1152" /></p>
+<p>We can assume that residuals will be larger the more rides there are, so I’ve created a new metric that measures the relative residual against the number of rides:</p>
+<p>Proportional Residual<span class="math inline">\(_{n}\)</span> = <span class="math inline">\(|\)</span>Residual Error<span class="math inline">\(_{n}\)</span><span class="math inline">\(/\)</span>Number of rides<span class="math inline">\(_{n}\)</span><span class="math inline">\(|\)</span>.</p>
+<p><img src="bikeshare2_files/figure-html/fhidfh-1.png" width="1152" /></p>
+<p>In these cases of low daily rides, we should not use much of an adjustor other than the station average. This can be done with regularization!</p>
+<div id="regularization-mount-up" class="section level4">
+<h4><a href="https://cdn.shopify.com/s/files/1/0058/3532/products/SCAN0467_2000x.JPG?v=1466634135">Regularization</a>, mount up!</h4>
+<pre class="r"><code>lambdas &lt;- seq(0, 10, .10)
+
+  rmses &lt;- sapply(lambdas, function(l){
+  predicted_ratings &lt;- test2 %&gt;% 
+  left_join(st_lookup) %&gt;% 
+  left_join(region_wday_lookup) %&gt;% 
+  left_join(temp_lookup) %&gt;%
+  left_join(month_lookup) %&gt;%
+  left_join(year_lookup) %&gt;%
+  left_join(cicla_lookup2) %&gt;%
+  left_join(ciclavia2) %&gt;%
+    mutate(pred = mu + ifelse(is.na(ciclavia_event), 
+                     p_station + (p_wday + p_temp + p_year + p_month)*(n/(n+l)), 
+                        ifelse(is.na(p_cicla),
+                           p_station + (p_wday + p_temp + p_year + p_month)*(n/(n+l)),    
+                           p_station + (p_wday + p_temp + p_year + p_month + p_cicla)*(n/(n+l)))))%&gt;%
+    pull(pred)
+    
+  return(RMSE(predicted_ratings, test2$n))
+  } )</code></pre>
+<p><img src="bikeshare2_files/figure-html/regplottt-1.png" width="1152" /></p>
+<pre><code>## Best lambda to minimize RMSE: 2.2 for a minimum RMSE of 5.593044 !</code></pre>
+<p>With regularization, we are able to reduce the effects of day of week+region, temperature, year, and month for the keys (station+day) that have very few rides. Let’s apply this updated model and save the predictions.</p>
+<pre><code>## Has a RSME of 5.593044 which is great!</code></pre>
+<p><img src="bikeshare2_files/figure-html/trendddd4-1.png" width="1152" /></p>
+<p><img src="bikeshare2_files/figure-html/fhidfh2-1.png" width="1152" /></p>
+</div>
+</div>
+</div>
+<div id="model-results" class="section level1">
+<h1>Model Results</h1>
+<p>After running different combinations of variables, the best model (that yields the lowest RMSE) used starting station with regularization on region/day of week, temperature, month, year, and ciclavia event. Here is the breakout of each iteration and the RMSEs.</p>
+<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+RMSE Results
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Overall Average
+</td>
+<td style="text-align:right;">
+8.737111
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Added Station
+</td>
+<td style="text-align:right;">
+6.015118
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Added Day of Week &amp; Region
+</td>
+<td style="text-align:right;">
+5.944419
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Added Month
+</td>
+<td style="text-align:right;">
+5.793406
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Added Year
+</td>
+<td style="text-align:right;">
+5.707488
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Added Ciclavia Events
+</td>
+<td style="text-align:right;">
+5.659323
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Added Regularization
+</td>
+<td style="text-align:right;">
+5.593045
+</td>
+</tr>
+</tbody>
+</table>
+<p><img src="bikeshare2_files/figure-html/final-1.gif" /><!-- --></p>
+<p>The visualization below shows where we are most accurate/inaccurate, using the proportional residual calculation: <img src="bikeshare2_files/figure-html/poroepr-1.png" width="1152" /></p>
+</div>
+<div id="conclusion" class="section level1">
+<h1>Conclusion</h1>
+<p>After incrementing new effects into the model, we found that adding regularization helped improve the Root Mean Square Error for variables other than Station. This was a pretty difficult model to build since I realized that the data set provided by Bike Share didn’t have all the crucial variables need to create an effective predictive model. Rather, we were only given the usage stats so we had to inspect and find outside variables that could impact the prediciton in a positive way. In this case, we found temperature and anomalous events such as Ciclovia to help with the prediction. This is probably true of any data set based on user usage of transportation. It is usually necessary to look to outside factors such as holidays, natural disasters, etc.</p>
+<p>There are several limitation to consider with this model:</p>
+<p><strong>Bike availability</strong>  - The bike share program has station throughout the city and have a finite number of bikes that could fit in each. There’s always a chance that demand (people who want to ride) outweighs the actual supply. There was no measurement of this factor in this data set and I’m not sure it actually exists in the real-world. - Furthermore, the number of rides are limited by how many bikes are put in that station on any given day. I am unaware of what sort of guidance the program uses to load bikes in each station, but if that could misinform the true level of riding demand. - The model did not factor in where bike rides ended. This will also impact the number of bikes available, hence skewing the historical data. *Other considerations** - Future Ciclavia events could be used to forecast ride demand, but we would need to make an educated guess as to which region will be impacted. There were several events that did not have a substantial impact on any of the stations; we could use historical performance to estimate such as Heart of LA always impacts DTLA. This is more of an art than a science. - Other city events such as marathons, holiday, and natural disasters were not included. Natural disasters generally cannot be predicted anyway, so would not work in this model regardless.</p>
+<p><strong>Thanks for reading!</strong><br />
+<strong>Feel free to check out my <a href="https://public.tableau.com/profile/daniel.romotsky#!/vizhome/DanielRomotsky-Portfolio2/Portfolio">Tableau Portfolio</a> or add me on <a href="https://www.linkedin.com/in/daniel-romotsky/">LinkedIn</a>!</strong></p>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
