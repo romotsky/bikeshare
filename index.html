@@ -865,7 +865,7 @@ Union Station West Portal
 </div>
 <div id="residuals" class="section level3">
 <h3>Residuals</h3>
-<p>Where am I most off? Let’s inspect the daily trend by region. <!--<img src="bikeshare2_files/figure-html/stationmodel-1.png" --></p>
+<p>Where am I most off? Let’s inspect the daily trend by region. <!--<img src="bikeshare2_files/figure-html/stationmodel-1.png" --> </p>
 <p><img src="bikeshare2_files/figure-html/trendddd-1.png" /><!-- --></p>
 <p>There are big misses in the predictions for days where the rides are abnormally high:</p>
 <table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
@@ -975,9 +975,9 @@ DTLA
 </table>
 <p>In doing a bit of research of what may have been going on for these dates, it became very apparent that Los Angeles is full of outdoor events. One that is very popular is</p>
 </div>
-<div id="ciclovia" class="section level3">
-<h3><a href="https://www.ciclavia.org">Ciclovia</a></h3>
-<p><strong>Ciclovia</strong> “catalyzes vibrant public spaces, active transportation and good health through car-free streets.” They put on large biking events around the city. The <a href="https://www.ciclavia.org/events_history">past events</a> align quite closely to some of these large residuals, so I will scrape the site and pull in the dates and locations of each.</p>
+<div id="ciclavia" class="section level3">
+<h3><a href="https://www.ciclavia.org">Ciclavia</a></h3>
+<p><strong>Ciclavia</strong> “catalyzes vibrant public spaces, active transportation and good health through car-free streets.” They put on large biking events around the city. The <a href="https://www.ciclavia.org/events_history">past events</a> align quite closely to some of these large residuals, so I will scrape the site and pull in the dates and locations of each.</p>
 <table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
@@ -1451,7 +1451,7 @@ Added Regularization
 </div>
 <div id="conclusion" class="section level1">
 <h1>Conclusion</h1>
-<p>After incrementing new effects into the model, we found that adding regularization helped improve the Root Mean Square Error for variables other than Station. This was a pretty difficult model to build since I realized that the data set provided by Bike Share didn’t have all the crucial variables need to create an effective predictive model. Rather, we were only given the usage stats so we had to inspect and find outside variables that could impact the prediciton in a positive way. In this case, we found temperature and anomalous events such as Ciclovia to help with the prediction. This is probably true of any data set based on user usage of transportation. It is usually necessary to look to outside factors such as holidays, natural disasters, etc.</p>
+<p>After incrementing new effects into the model, we found that adding regularization helped improve the Root Mean Square Error for variables other than Station. This was a pretty difficult model to build since I realized that the data set provided by Bike Share didn’t have all the crucial variables need to create an effective predictive model. Rather, we were only given the usage stats so we had to inspect and find outside variables that could impact the prediciton in a positive way. In this case, we found temperature and anomalous events such as Ciclavia to help with the prediction. This is probably true of any data set based on user usage of transportation. It is usually necessary to look to outside factors such as holidays, natural disasters, etc.</p>
 <p>There are several limitation to consider with this model:</p>
 <p><strong>Bike availability</strong>  - The bike share program has station throughout the city and have a finite number of bikes that could fit in each. There’s always a chance that demand (people who want to ride) outweighs the actual supply. There was no measurement of this factor in this data set and I’m not sure it actually exists in the real-world. - Furthermore, the number of rides are limited by how many bikes are put in that station on any given day. I am unaware of what sort of guidance the program uses to load bikes in each station, but if that could misinform the true level of riding demand. - The model did not factor in where bike rides ended. This will also impact the number of bikes available, hence skewing the historical data. *Other considerations** - Future Ciclavia events could be used to forecast ride demand, but we would need to make an educated guess as to which region will be impacted. There were several events that did not have a substantial impact on any of the stations; we could use historical performance to estimate such as Heart of LA always impacts DTLA. This is more of an art than a science. - Other city events such as marathons, holiday, and natural disasters were not included. Natural disasters generally cannot be predicted anyway, so would not work in this model regardless.</p>
 <p><strong>Thanks for reading!</strong><br />
