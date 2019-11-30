@@ -12,7 +12,7 @@
 
 <meta name="author" content="Daniel Romotsky" />
 
-<meta name="date" content="2019-11-28" />
+<meta name="date" content="2019-11-30" />
 
 <title>Los Angeles Metro Bike Share Analysis &amp; Predictive Model</title>
 
@@ -181,16 +181,14 @@ summary {
 
 <h1 class="title toc-ignore">Los Angeles Metro Bike Share Analysis &amp; Predictive Model</h1>
 <h4 class="author">Daniel Romotsky</h4>
-<h4 class="date">11/28/2019</h4>
+<h4 class="date">11/30/2019</h4>
 
 </div>
 
 
-<p><img src="title2.gif" /></p>
-<div id="to-view-the-full-analysis-with-animation-please-refer-to-the-html-version" class="section level2">
-<h2>To view the full analysis with animation, please refer to the <a href="">HTML version</a></h2>
-<hr />
-</div>
+<p><img src="title3.gif" /></p>
+<!-- ## To view the full analysis with animation, please refer to the [HTML version]() -->
+<!-- *** -->
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
 <p>As an LA native, I know that it is a driver’s city. Traffic is always expected and road rage is narrowly avoided daily. Up until the 2010’s, you had to own a car to get anywhere. However, tech and the share economy has started to change that assumption, with Uber and Lyft, more accurate bus times, delivery services, and flexible work making it somewhat easier to get to where you need to be.</p>
@@ -298,30 +296,30 @@ station_lookup&lt;- read.csv(&quot;station.csv&quot;, stringsAsFactors = FALSE)<
 <div id="time-based" class="section level3">
 <h3>Time-based</h3>
 <ul>
-<li>We see a clear increase in rides over time <img src="bikeshare2_files/figure-html/viz-1.png" width="1152" /></li>
+<li>We see a clear increase in rides over time <img src="bikeshare2_files/figure-html/viz-1.png" /><!-- --></li>
 <li>It’s not surprising to see that rides are highest during the summer:</li>
 </ul>
-<p><img src="bikeshare2_files/figure-html/viz2-1.png" width="1152" /></p>
+<p><img src="bikeshare2_files/figure-html/viz2-1.png" /><!-- --></p>
 </div>
 <div id="station-performance" class="section level3">
 <h3>Station performance</h3>
 <p>Each station rolls into a larger region around the city of Los Angeles:</p>
-<p><img src="bikeshare2_files/figure-html/station2-1.png" width="1152" /></p>
+<p><img src="bikeshare2_files/figure-html/station2-1.png" /><!-- --></p>
 <p>Obviously the most rides begin in Downtown LA. We’ll use free scales and view over months so that we can analyze the differences in distribution by region</p>
-<p><img src="bikeshare2_files/figure-html/shidsu-1.png" width="1152" /> The regions all follow similar distributions - increases in the summer, however there are some regions that have unknown regions or very low ride counts. Have bikes only been available for short periods of time in different regions? This can be viewed in two ways.</p>
+<p><img src="bikeshare2_files/figure-html/shidsu-1.png" /><!-- --> The regions all follow similar distributions - increases in the summer, however there are some regions that have unknown regions or very low ride counts. Have bikes only been available for short periods of time in different regions? This can be viewed in two ways.</p>
 <p><strong>Time-series view of each region</strong></p>
-<p><img src="bikeshare2_files/figure-html/dhfudhf-1.png" width="1152" /></p>
+<p><img src="bikeshare2_files/figure-html/dhfudhf-1.png" /><!-- --></p>
 <p><strong>Heatmap view of each region</strong> It’s a bit more clear of when each station was available with a heatmap:</p>
-<p><img src="bikeshare2_files/figure-html/erherhheat-1.png" width="1152" /></p>
+<p><img src="bikeshare2_files/figure-html/erherhheat-1.png" /><!-- --></p>
 <p>More <strong>data cleansing #2</strong> ! Because North Hollywood region is so new and Pasadena ceased operations, I will remove both for the predictive model. NAs and Free Bikes will be omitted from further analysis as well.</p>
 </div>
 <div id="spatialmapping-data-analysis" class="section level3">
 <h3>Spatial/Mapping Data &amp; Analysis</h3>
 <p>Let’s look at some spatial data to help visualize movement of these bike rides. I used the <strong>ggmap</strong> package, which integrates with a Google Maps API key. I can then plot point directly on a map, using the latitude and longitude coordinates from the data set.</p>
 <p><em>Note</em> that you will need to input your own key in order to run this mapping script.</p>
-<p><img src="bikeshare2_files/figure-html/map-1.png" width="1152" /></p>
+<p><img src="bikeshare2_files/figure-html/map-1.png" /><!-- --></p>
 <p>Main areas of operation are in Downtown LA, Santa Monica, and Long Beach.</p>
-<p><img src="bikeshare2_files/figure-html/neighborhoodviews-1.png" width="1152" /><img src="bikeshare2_files/figure-html/neighborhoodviews-2.png" width="1152" /><img src="bikeshare2_files/figure-html/neighborhoodviews-3.png" width="1152" /></p>
+<p><img src="bikeshare2_files/figure-html/neighborhoodviews-1.png" /><!-- --><img src="bikeshare2_files/figure-html/neighborhoodviews-2.png" /><!-- --><img src="bikeshare2_files/figure-html/neighborhoodviews-3.png" /><!-- --></p>
 <p>The data set provides a start station and an end station, which allows me to look at general routes people take on their shared bikes. As mentioned previously, the three main regions are Downtown, Santa Monica, and Long Beach… and for those familiar with LA will know that they are nowhere near each other!  Using the <strong>geosphere</strong> package…</p>
 <pre><code>## Distance from DTLA and Long Beach is about 35060.06 meters or 21.78531 miles!</code></pre>
 <pre><code>## Distance between DTLA and Santa Monica is about 21185.24 meters or 13.1639 miles!</code></pre>
@@ -329,7 +327,7 @@ station_lookup&lt;- read.csv(&quot;station.csv&quot;, stringsAsFactors = FALSE)<
 <p>Surely, noone is crazy enough to bike between regions… right? Wrong!</p>
 <pre><code>## Apparently, there are 500 rides that went from one region to the other. The percentage of rides out of the total is 0.0637% 
 ##  Where are they starting and ending?</code></pre>
-<p><img src="bikeshare2_files/figure-html/crazybikers-1.png" width="1152" /></p>
+<p><img src="bikeshare2_files/figure-html/crazybikers-1.png" /><!-- --></p>
 <p>It looks like most of them originated in DTLA. However, this static visualization is rather tough to understand.  <em>Side note</em> about myself: I am really into animation and video production. A true novice in these fields, I’ve made a few animated shorts and parody videos for friends and families. I also love being analytical and got into data visualization and analytics because it’s a great blend of both sides of the brain. However, I didn’t think there was opportunity to infuse movement of data in a professional field until I learned about the… <strong>gganimate</strong> package - this is developed to work in tandem with ggplot functions to create frames of graphs which shows change over time. I will use this extensively for any animated graphics you see moving forward. So… where are these bikers heading?</p>
 <p><img src="bikeshare2_files/figure-html/craycray-1.gif" /><!-- --></p>
 <p>The majority of these over-achievers are heading to or from downtown - likely for work. Very few of the long rides are along the coast (SM to LB) since the <a href="https://upload.wikimedia.org/wikipedia/commons/5/55/Lasouthbaybiketrail.jpg">Marvin Braude Bike Trail</a> ends at Torrance - well north of Long Beach.</p>
@@ -338,17 +336,17 @@ station_lookup&lt;- read.csv(&quot;station.csv&quot;, stringsAsFactors = FALSE)<
 <p>Are there any hourly trends that we can see? Again, I will use the <strong>lubridate</strong> package to parse the hour, and <strong>gganimate</strong> to visualize the trends, if any.</p>
 <p><img src="bikeshare2_files/figure-html/hourly-1.gif" /><!-- --></p>
 <p>A heatmap of hours by station doesn’t really show any large trends.</p>
-<p><img src="bikeshare2_files/figure-html/heashd-1.png" width="1152" /></p>
+<p><img src="bikeshare2_files/figure-html/heashd-1.png" /><!-- --></p>
 <p>Furthermore, looking at boxplots of hourly rides by stations, hourly data will not be a really solid predictor.</p>
-<p><img src="bikeshare2_files/figure-html/dfhudi-1.png" width="1152" /></p>
+<p><img src="bikeshare2_files/figure-html/dfhudi-1.png" /><!-- --></p>
 <p>Hours will not be used in the predictive model.</p>
 </div>
 <div id="day-of-week" class="section level3">
 <h3>Day of week</h3>
 <p>What can the day of week tell us?</p>
-<p><img src="bikeshare2_files/figure-html/wday-1.png" width="1152" /></p>
+<p><img src="bikeshare2_files/figure-html/wday-1.png" /><!-- --></p>
 <p>There’s nothing really discernible here, but if you recall, we know that ride behavior is different by region. Splitting this view out by region shows a clear difference in the rides.</p>
-<p><img src="bikeshare2_files/figure-html/regwday-1.png" width="1152" /></p>
+<p><img src="bikeshare2_files/figure-html/regwday-1.png" /><!-- --></p>
 <p>There are more weekend bike riders in Westside and Long Beach, since that’s where the fun is at… on the beach! It’s pretty apparent that bikers from DTLA are commuters, versus Westside and Port of LA, which are more popular on the weekends.</p>
 <p>So far, I’ve explored date-based trends and have found that <em>month</em> and <em>day of week + region</em> will be useful predictors in our model. One reason why certain months have more or less rides is due to temperature. Is there correlation between bike rides and temperature?</p>
 </div>
@@ -403,9 +401,9 @@ station_lookup&lt;- read.csv(&quot;station.csv&quot;, stringsAsFactors = FALSE)<
 <li><p>STP = Mean station pressure for the day in millibars to tenths.</p></li>
 </ul>
 <p>Let’s plot each of these temp metrics against # of rides.</p>
-<p><img src="bikeshare2_files/figure-html/inspectdiff-1.png" width="1152" /></p>
+<p><img src="bikeshare2_files/figure-html/inspectdiff-1.png" /><!-- --></p>
 <p>Taking a closer look at STP and TEMP…</p>
-<p><img src="bikeshare2_files/figure-html/dfhudfhd-1.png" width="1152" /><img src="bikeshare2_files/figure-html/dfhudfhd-2.png" width="1152" /></p>
+<p><img src="bikeshare2_files/figure-html/dfhudfhd-1.png" /><!-- --><img src="bikeshare2_files/figure-html/dfhudfhd-2.png" /><!-- --></p>
 <pre><code>## Correlation between TEMP and rides is 0.1997316</code></pre>
 <p>The correlation between TEMP and rides is not linear, yet there is a clear increase in rides until around 25 degrees Celsius, where it drops off afterwards… too hot!</p>
 <p>Other metrics such as Visibility (VISIB) and STP do not have enough variance to spot a trend.</p>
@@ -415,7 +413,7 @@ station_lookup&lt;- read.csv(&quot;station.csv&quot;, stringsAsFactors = FALSE)<
 <pre><code>## Correlation between TEMP and MIN is 0.8978786</code></pre>
 <p>Due to such a high correlation, using all three won’t have incremental impact on the model. So I will only use TEMP.</p>
 <p>Let’s look at wind speed a bit closer, stratified by Temperature.</p>
-<p><img src="bikeshare2_files/figure-html/WDSP-1.png" width="1152" /></p>
+<p><img src="bikeshare2_files/figure-html/WDSP-1.png" /><!-- --></p>
 <pre><code>## # A tibble: 1 x 1
 ##   corr_TEMP_WDSP
 ##            &lt;dbl&gt;
@@ -721,7 +719,7 @@ Fri
 </tr>
 </tbody>
 </table>
-<p>Quick inspection of the data sets. <img src="bikeshare2_files/figure-html/dfhiuds-1.png" width="1152" /></p>
+<p>Quick inspection of the data sets. <img src="bikeshare2_files/figure-html/dfhiuds-1.png" /><!-- --></p>
 <div id="root-mean-square-error-aka-rmse-will-be-the-measure-of-accuracy-of-the-model." class="section level3">
 <h3>Root Mean Square Error (AKA <strong>RMSE</strong>) will be the measure of accuracy of the model.</h3>
 <p>The calculation used here is <span class="math inline">\(\sqrt(1/n\sum_{1}^{n} (actualrides_{n} - predictedrides_{n})^2)\)</span></p>
@@ -864,8 +862,8 @@ Union Station West Portal
 </div>
 <div id="residuals" class="section level3">
 <h3>Residuals</h3>
-<p>Where am I most off? Let’s inspect the daily trend by region. <img src="bikeshare2_files/figure-html/stationmodel-1.png" width="1152" /></p>
-<p><img src="bikeshare2_files/figure-html/trendddd-1.png" width="1152" /></p>
+<p>Where am I most off? Let’s inspect the daily trend by region. <img src="bikeshare2_files/figure-html/stationmodel-1.png" /><!-- --></p>
+<p><img src="bikeshare2_files/figure-html/trendddd-1.png" /><!-- --></p>
 <p>There are big misses in the predictions for days where the rides are abnormally high:</p>
 <table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
 <thead>
@@ -1151,7 +1149,7 @@ December 02, 2018
 ## 1 ciclavia days          7.22
 ## 2 non-ciclavia days      3.65</code></pre>
 <p>So overall, the mean absolute residuals are almost twice as high during ciclavia days. However, note that these events aren’t usually across the whole city. Rather, these events are specific to certain areas…</p>
-<p><img src="bikeshare2_files/figure-html/cicllaaaaa-1.png" width="1152" /><img src="bikeshare2_files/figure-html/cicllaaaaa-2.png" width="1152" /></p>
+<p><img src="bikeshare2_files/figure-html/cicllaaaaa-1.png" /><!-- --><img src="bikeshare2_files/figure-html/cicllaaaaa-2.png" /><!-- --></p>
 <p>We can now label the regions in which ciclavia would be impacting bike rides.</p>
 <table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
 <thead>
@@ -1282,7 +1280,7 @@ DTLA
 </table>
 <p>We can now add this as a new variable into the train and test data, joined off of date and region. Then use it as a predictor.</p>
 <p>Viewing these events as labels in our original Residual view…</p>
-<p><img src="bikeshare2_files/figure-html/trendddd2-1.png" width="1152" /></p>
+<p><img src="bikeshare2_files/figure-html/trendddd2-1.png" /><!-- --></p>
 <p>Now let’s add ciclavia into the prediction… This is a bit trickier than the other variables, given that the adjsutor should only apply to specific days and regions.</p>
 <pre><code>cicla_lookup2 &lt;- train2 %&gt;% 
   filter(!is.na(ciclavia_event)) %&gt;% # just the ciclavia days in the region that is impacted
@@ -1335,12 +1333,12 @@ Westside
                             p_station + p_wday + p_temp + p_year + p_month + p_cicla)))</code></pre>
 <pre><code>## Yields an RMSE of 5.659323 which is better!</code></pre>
 <p>Looks better for those days!</p>
-<p><img src="bikeshare2_files/figure-html/trendddd3-1.png" width="1152" /></p>
+<p><img src="bikeshare2_files/figure-html/trendddd3-1.png" /><!-- --></p>
 <p>The event anomalies are accounted for! We are very accurate at the daily-regional level, but pretty a miss at the more granular station level.</p>
-<p><img src="bikeshare2_files/figure-html/ghdhfid-1.png" width="1152" /></p>
+<p><img src="bikeshare2_files/figure-html/ghdhfid-1.png" /><!-- --></p>
 <p>We can assume that residuals will be larger the more rides there are, so I’ve created a new metric that measures the relative residual against the number of rides:</p>
 <p>Proportional Residual<span class="math inline">\(_{n}\)</span> = <span class="math inline">\(|\)</span>Residual Error<span class="math inline">\(_{n}\)</span><span class="math inline">\(/\)</span>Number of rides<span class="math inline">\(_{n}\)</span><span class="math inline">\(|\)</span>.</p>
-<p><img src="bikeshare2_files/figure-html/fhidfh-1.png" width="1152" /></p>
+<p><img src="bikeshare2_files/figure-html/fhidfh-1.png" /><!-- --></p>
 <p>In these cases of low daily rides, we should not use much of an adjustor other than the station average. This can be done with regularization!</p>
 <div id="regularization-mount-up" class="section level4">
 <h4><a href="https://cdn.shopify.com/s/files/1/0058/3532/products/SCAN0467_2000x.JPG?v=1466634135">Regularization</a>, mount up!</h4>
@@ -1364,12 +1362,12 @@ Westside
     
   return(RMSE(predicted_ratings, test2$n))
   } )</code></pre>
-<p><img src="bikeshare2_files/figure-html/regplottt-1.png" width="1152" /></p>
+<p><img src="bikeshare2_files/figure-html/regplottt-1.png" /><!-- --></p>
 <pre><code>## Best lambda to minimize RMSE: 2.2 for a minimum RMSE of 5.593044 !</code></pre>
 <p>With regularization, we are able to reduce the effects of day of week+region, temperature, year, and month for the keys (station+day) that have very few rides. Let’s apply this updated model and save the predictions.</p>
 <pre><code>## Has a RSME of 5.593044 which is great!</code></pre>
-<p><img src="bikeshare2_files/figure-html/trendddd4-1.png" width="1152" /></p>
-<p><img src="bikeshare2_files/figure-html/fhidfh2-1.png" width="1152" /></p>
+<p><img src="bikeshare2_files/figure-html/trendddd4-1.png" /><!-- --></p>
+<p><img src="bikeshare2_files/figure-html/fhidfh2-1.png" /><!-- --></p>
 </div>
 </div>
 </div>
@@ -1446,7 +1444,7 @@ Added Regularization
 </tbody>
 </table>
 <p><img src="bikeshare2_files/figure-html/final-1.gif" /><!-- --></p>
-<p>The visualization below shows where we are most accurate/inaccurate, using the proportional residual calculation: <img src="bikeshare2_files/figure-html/poroepr-1.png" width="1152" /></p>
+<!-- The visualization below shows where we are most accurate/inaccurate, using the proportional residual calculation: -->
 </div>
 <div id="conclusion" class="section level1">
 <h1>Conclusion</h1>
